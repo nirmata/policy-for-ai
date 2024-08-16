@@ -1,0 +1,38 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-gpu-tolerations-affinity
+  annotations:
+    policies.kyverno.io/title: Validate GPU Tolerations and Affinity
+    policies.kyverno.io/category: GPU Management
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/description: >-
+      Validate and inject appropriate tolerations and affinity rules for pods requiring GPUs, ensuring they can be scheduled on nodes with the necessary GPU resources.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: check-gpu-tolerations-affinity
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Pods requiring GPUs must have appropriate tolerations and affinity rules to ensure they can be scheduled on nodes with GPU resources."
+        pattern:
+          spec:
+            tolerations:
+              - key: "nvidia.com/gpu"
+                operator: "Exists"
+            affinity:
+              nodeAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  nodeSelectorTerms:
+                    - matchExpressions:
+                        - key: "kubernetes.io/gpu-node"
+                          operator: "In"
+                          values:
+                            - "true"

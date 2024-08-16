@@ -1,0 +1,28 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-gpu-node-selector
+  annotations:
+    policies.kyverno.io/title: Enforce GPU Node Selector
+    policies.kyverno.io/category: GPU Management
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/description: >-
+      Enforce using correct node selectors or node affinity rules for pods requesting GPU resources, ensuring they are scheduled on GPU-capable nodes.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: check-gpu-node-selector
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Pods requesting GPU resources must use the correct node selectors or node affinity rules to ensure scheduling on GPU-capable nodes."
+        pattern:
+          spec:
+            nodeSelector:
+              kubernetes.io/gpu-node: "true"

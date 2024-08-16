@@ -1,0 +1,32 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-gpu-limits-requests
+  annotations:
+    policies.kyverno.io/title: Validate GPU Limits and Requests
+    policies.kyverno.io/category: GPU Management
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/description: >-
+      Validate that pods requesting GPUs specify the correct resource limits and requests, ensuring they use the proper format (e.g., nvidia.com/gpu: 1).
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: check-gpu-limits-requests
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Pods requesting GPUs must specify resource limits and requests with the correct format (e.g., nvidia.com/gpu: 1)."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  requests:
+                    nvidia.com/gpu: ">0"
+                  limits:
+                    nvidia.com/gpu: ">0"
