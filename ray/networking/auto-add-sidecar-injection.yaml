@@ -1,0 +1,26 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: auto-add-sidecar-injection
+  annotations:
+    policies.kyverno.io/title: Auto Add Sidecar Injection
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Automatically adds the `sidecar.istio.io/inject: "true"` label to pods in namespaces where Ray is deployed, ensuring Istio sidecar injection.
+spec:
+  rules:
+  - name: add-sidecar-injection
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            sidecar.istio.io/inject: "true"

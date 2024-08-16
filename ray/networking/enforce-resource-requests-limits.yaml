@@ -1,0 +1,36 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-resource-requests-limits
+  annotations:
+    policies.kyverno.io/title: Enforce Resource Requests and Limits
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Enforces resource requests and limits for Istio sidecar containers in Ray pods, ensuring they have appropriate CPU and memory allocations.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: enforce-sidecar-resources
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Istio sidecar containers must have resource requests and limits defined."
+      pattern:
+        spec:
+          containers:
+          - name: istio-proxy
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "128Mi"
+              limits:
+                cpu: "200m"
+                memory: "256Mi"

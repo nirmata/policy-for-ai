@@ -1,0 +1,31 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-istio-virtualservice-destinationrule
+  annotations:
+    policies.kyverno.io/title: Validate Istio VirtualService and DestinationRule
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/subject: VirtualService, DestinationRule
+    policies.kyverno.io/description: >-
+      Ensures the presence and correct configuration of Istio VirtualService and DestinationRule resources for Ray services.
+      Ensures these resources are created with the appropriate routing rules and traffic policies such that it does not allow `*` wildcard hosts.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: validate-virtualservice-destinationrule
+    match:
+      any:
+      - resources:
+          kinds:
+          - VirtualService
+          - DestinationRule
+    validate:
+      message: "Istio VirtualService and DestinationRule must not use wildcard hosts (`*`)."
+      pattern:
+        spec:
+          hosts:
+          - "!*"

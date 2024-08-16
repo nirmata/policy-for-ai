@@ -1,0 +1,35 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-traffic-management-rules
+  annotations:
+    policies.kyverno.io/title: Validate Traffic Management Rules
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/subject: VirtualService
+    policies.kyverno.io/description: >-
+      Validates that VirtualService resources for Ray components include appropriate traffic management rules, such as load balancing configurations and fault injection settings.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: validate-traffic-management
+    match:
+      any:
+      - resources:
+          kinds:
+          - VirtualService
+    validate:
+      message: "VirtualService must include load balancing and fault injection settings."
+      pattern:
+        spec:
+          http:
+          - route:
+            - destination:
+                subset: "load-balancer"
+          fault:
+            abort:
+              percentage:
+                value: 5

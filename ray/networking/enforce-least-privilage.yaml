@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: allow-only-get-list-watch
+  annotations:
+    policies.kyverno.io/title: Allow Only Get, List, and Watch Verbs
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/subject: Role, ClusterRole, RoleBinding, ClusterRoleBinding
+    kyverno.io/description: >-
+      This policy ensures that Roles, RoleBindings, ClusterRoles, and ClusterRoleBindings only use the verbs get, list, and watch on resources.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: allow-only-get-list-watch
+      match:
+        any:
+          - resources:
+              kinds:
+                - Role
+                - ClusterRole
+                - RoleBinding
+                - ClusterRoleBinding
+      validate:
+        message: "ClusterRoles, Roles, RoleBindings and ClusterRoleBindings must adhere to the principle of least privilege."
+        pattern:
+          rules:
+            - verbs: ["get", "list", "watch"]

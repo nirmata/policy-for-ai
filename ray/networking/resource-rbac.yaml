@@ -1,0 +1,65 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: resource-access-policies
+  annotations:
+    policies.kyverno.io/title: Resource Access Policies
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/subject: Secret, ConfigMap, Namespace
+    policies.kyverno.io/description: >-
+      Implement policies to define fine-grained access controls to sensitive Kubernetes resources (e.g., secrets, configmaps, namespaces).
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: restrict-secret-access
+    match:
+      any:
+      - resources:
+          kinds:
+          - Secret
+    validate:
+      message: "Access to Secrets is restricted to specific roles."
+      deny:
+        conditions:
+          any:
+          - key: "{{request.userInfo.roles}}"
+            operator: AnyNotIn
+            value:
+            - "admin"
+            - "devops"
+  - name: restrict-configmap-access
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    validate:
+      message: "Access to ConfigMaps is restricted to specific roles."
+      deny:
+        conditions:
+          any:
+          - key: "{{request.userInfo.roles}}"
+            operator: AnyNotIn
+            value:
+            - "admin"
+            - "devops"
+  - name: restrict-namespace-access
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    validate:
+      message: "Access to Namespaces is restricted to specific roles."
+      deny:
+        conditions:
+          any:
+          - key: "{{request.userInfo.roles}}"
+            operator: AnyNotIn
+            value:
+            - "admin"
+            - "devops"

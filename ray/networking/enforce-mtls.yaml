@@ -1,0 +1,30 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-mtls
+  annotations:
+    policies.kyverno.io/title: Enforce Istio Authentication
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/subject: DestinationRule
+    policies.kyverno.io/description: >-
+      Enforces the creation of Istio AuthorizationPolicy resources for Ray services and ensures that mTLS is enabled in DestinationRule resources.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: enforce-mtls
+    match:
+      any:
+      - resources:
+          kinds:
+          - DestinationRule
+    validate:
+      message: "mTLS must be enabled in DestinationRule for Ray services."
+      pattern:
+        spec:
+          trafficPolicy:
+            tls:
+              mode: "ISTIO_MUTUAL"

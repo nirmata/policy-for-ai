@@ -1,0 +1,32 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-retry-timeout-settings
+  annotations:
+    policies.kyverno.io/title: Validate Retry and Timeout Settings
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.11.0
+    policies.kyverno.io/subject: VirtualService
+    policies.kyverno.io/description: >-
+      Validates that VirtualService resources for Ray services include appropriate retry and timeout settings to enhance service reliability.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: validate-retry-timeout
+    match:
+      any:
+      - resources:
+          kinds:
+          - VirtualService
+    validate:
+      message: "VirtualService must include retry and timeout settings."
+      pattern:
+        spec:
+          http:
+          - retries:
+              attempts: 3
+              perTryTimeout: "2s"
+          - timeout: "10s"
