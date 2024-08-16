@@ -1,0 +1,300 @@
+### Policy 1: Resource Requests and Limits
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-ray-resource-requests-limits
+  annotations:
+    policies.kyverno.io/title: Enforce Resource Requests and Limits for Ray Pods
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Ensures that all Ray-related pods have appropriate resource requests and limits defined,
+      ensuring they are within acceptable ranges.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-ray-resource-requests-limits
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "All Ray-related pods must have CPU and memory resource requests and limits within acceptable ranges."
+        pattern:
+          spec:
+            containers:
+            - resources:
+                requests:
+                  cpu: "?*"
+                  memory: "?*"
+                limits:
+                  cpu: "?*"
+                  memory: "?*"
+
+### Policy 2: Horizontal Pod Autoscaler (HPA)
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-ray-hpa
+  annotations:
+    policies.kyverno.io/title: Validate Horizontal Pod Autoscaler for Ray Deployments
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: HorizontalPodAutoscaler
+    policies.kyverno.io/description: >-
+      Validates the presence and configuration of HorizontalPodAutoscaler resources for Ray deployments,
+      ensuring appropriate metrics and scaling parameters are set.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-hpa-configuration
+      match:
+        any:
+        - resources:
+            kinds:
+            - HorizontalPodAutoscaler
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "Ray deployments must have a HorizontalPodAutoscaler with appropriate metrics and scaling parameters."
+        pattern:
+          spec:
+            metrics:
+            - type: Resource
+              resource:
+                name: cpu
+                target:
+                  type: Utilization
+            minReplicas: "?*"
+            maxReplicas: "?*"
+
+### Policy 3: Cluster Autoscaler Integration
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-cluster-autoscaler-labels
+  annotations:
+    policies.kyverno.io/title: Enforce Cluster Autoscaler Labels for Ray Node Groups
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Node
+    policies.kyverno.io/description: >-
+      Ensures that node groups used by Ray clusters are correctly labeled and configured for use with the Cluster Autoscaler.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-cluster-autoscaler-labels
+      match:
+        any:
+        - resources:
+            kinds:
+            - Node
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "Ray node groups must be correctly labeled for Cluster Autoscaler integration."
+        pattern:
+          metadata:
+            labels:
+              cluster-autoscaler.kubernetes.io/enabled: "true"
+
+### Policy 4: Node Labeling
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-ray-node-labels
+  annotations:
+    policies.kyverno.io/title: Enforce Node Labeling for Ray Workloads
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Node
+    policies.kyverno.io/description: >-
+      Enforces consistent and appropriate labeling of nodes, particularly for GPU or specialized hardware used by Ray workloads.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-node-labels
+      match:
+        any:
+        - resources:
+            kinds:
+            - Node
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "Nodes used for Ray workloads must be appropriately labeled for resource capabilities, such as GPU."
+        pattern:
+          metadata:
+            labels:
+              ray.io/type: "?*"
+
+### Policy 5: Metrics Collection
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-ray-metrics-collection
+  annotations:
+    policies.kyverno.io/title: Validate Metrics Collection for Ray Clusters
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Verifies the presence and configuration of necessary metrics collection components, such as the Metrics Server or custom metrics adapters Ray uses.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-metrics-server
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "Ray clusters must have the necessary metrics collection components configured."
+        pattern:
+          spec:
+            containers:
+            - name: metrics-server
+              image: "?*"
+
+### Policy 6: Pod Disruption Budgets (PDBs)
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-ray-pdb
+  annotations:
+    policies.kyverno.io/title: Enforce PodDisruptionBudget for Ray Components
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: PodDisruptionBudget
+    policies.kyverno.io/description: >-
+      Enforces the creation of PodDisruptionBudget resources for critical Ray components, ensuring minimal disruption during scaling events.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-ray-pdb
+      match:
+        any:
+        - resources:
+            kinds:
+            - PodDisruptionBudget
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "Critical Ray components must have PodDisruptionBudget resources configured."
+        pattern:
+          spec:
+            minAvailable: "?*"
+            maxUnavailable: "?*"
+
+### Policy 7: Scaling Behavior Tuning
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-ray-scaling-behavior
+  annotations:
+    policies.kyverno.io/title: Validate Scaling Behavior for Ray Clusters
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: HorizontalPodAutoscaler
+    policies.kyverno.io/description: >-
+      Validates and sets appropriate scaling behavior parameters for Ray clusters in HPA and Cluster Autoscaler configurations.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-scaling-behavior
+      match:
+        any:
+        - resources:
+            kinds:
+            - HorizontalPodAutoscaler
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "Ray clusters must have appropriate scaling behavior parameters configured in HPA."
+        pattern:
+          spec:
+            behavior:
+              scaleUp:
+                stabilizationWindowSeconds: "?*"
+              scaleDown:
+                stabilizationWindowSeconds: "?*"
+
+### Policy 8: Scale-Down Control
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-ray-scale-down-control
+  annotations:
+    policies.kyverno.io/title: Enforce Scale-Down Control for Ray Pods
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Enforces appropriate termination grace periods and preStop hooks for Ray pods to ensure graceful shutdown during scale-down events.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-scale-down-control
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "Ray pods must have appropriate termination grace periods and preStop hooks configured for scale-down events."
+        pattern:
+          spec:
+            terminationGracePeriodSeconds: "?*"
+            containers:
+            - lifecycle:
+                preStop:
+                  exec:
+                    command: ["?*"]
+
+### Policy 9: Scaling Policies
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-ray-scaling-policies
+  annotations:
+    policies.kyverno.io/title: Validate Scaling Policies for Ray Clusters
+    policies.kyverno.io/category: Kubernetes Autoscaler
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: HorizontalPodAutoscaler
+    policies.kyverno.io/description: >-
+      Validates and enforces specific scaling policies for Ray clusters, such as minimum and maximum node counts, in Cluster Autoscaler configurations.
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: validate-scaling-policies
+      match:
+        any:
+        - resources:
+            kinds:
+            - HorizontalPodAutoscaler
+            namespaceSelector:
+              matchLabels:
+                app: ray
+      validate:
+        message: "Ray clusters must have specific scaling policies configured, including minimum and maximum node counts."
+        pattern:
+          spec:
+            minReplicas: "?*"
+            maxReplicas: "?*"
