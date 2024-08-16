@@ -8,7 +8,6 @@ metadata:
     policies.kyverno.io/category: Istio
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: VirtualService, DestinationRule
     policies.kyverno.io/description: >-
       Ensures the presence and correct configuration of Istio VirtualService and DestinationRule resources for Ray services.
@@ -40,7 +39,6 @@ metadata:
     policies.kyverno.io/category: Istio
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Automatically adds the `sidecar.istio.io/inject: "true"` label to pods in namespaces where Ray is deployed, ensuring Istio sidecar injection.
@@ -67,7 +65,6 @@ metadata:
     policies.kyverno.io/category: Istio
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: VirtualService
     policies.kyverno.io/description: >-
       Validates that VirtualService resources for Ray components include appropriate traffic management rules, such as load balancing configurations and fault injection settings.
@@ -103,7 +100,6 @@ metadata:
     policies.kyverno.io/category: Istio
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: AuthorizationPolicy, DestinationRule
     policies.kyverno.io/description: >-
       Enforces the creation of Istio AuthorizationPolicy resources for Ray services and ensures that mTLS is enabled in DestinationRule resources.
@@ -148,7 +144,6 @@ metadata:
     policies.kyverno.io/category: Istio
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Enforces resource requests and limits for Istio sidecar containers in Ray pods, ensuring they have appropriate CPU and memory allocations.
@@ -185,7 +180,6 @@ metadata:
     policies.kyverno.io/category: Istio
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: VirtualService
     policies.kyverno.io/description: >-
       Validates that VirtualService resources for Ray services include appropriate retry and timeout settings to enhance service reliability.
@@ -218,7 +212,6 @@ metadata:
     policies.kyverno.io/category: Security
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: Secret, ConfigMap, Namespace
     policies.kyverno.io/description: >-
       Implement policies to define fine-grained access controls to sensitive Kubernetes resources (e.g., secrets, configmaps, namespaces).
@@ -284,7 +277,6 @@ metadata:
     policies.kyverno.io/category: Security
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: Secret
     policies.kyverno.io/description: >-
       Enforce policies that ensure sensitive data is appropriately encrypted in transit and at rest.
@@ -317,7 +309,6 @@ metadata:
     policies.kyverno.io/category: Security
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.11.0
-
     policies.kyverno.io/subject: Role, RoleBinding, ClusterRole, ClusterRoleBinding
     policies.kyverno.io/description: >-
       Enforce policies that adhere to the principle of least privilege, ensuring users and services have access only to the resources they require.
