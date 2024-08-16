@@ -2,7 +2,7 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: prevent-logging-sensitive-information
+  name: prevent-logging-sensitive-env
   annotations:
     policies.kyverno.io/title: Prevent Logging Sensitive Information
     policies.kyverno.io/category: Logging
