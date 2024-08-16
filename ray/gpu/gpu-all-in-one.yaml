@@ -1,5 +1,4 @@
-
-# GPU Management - Resource Specification
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -9,7 +8,7 @@ metadata:
     policies.kyverno.io/category: GPU Management
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/description: >-
       Validate that pods requesting GPUs specify the correct resource limits and requests, ensuring they use the proper format (e.g., nvidia.com/gpu: 1).
 spec:
@@ -32,7 +31,6 @@ spec:
                   limits:
                     nvidia.com/gpu: ">0"
 ---
-# GPU Management - Node Selector Validation
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -42,7 +40,7 @@ metadata:
     policies.kyverno.io/category: GPU Management
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/description: >-
       Enforce using correct node selectors or node affinity rules for pods requesting GPU resources, ensuring they are scheduled on GPU-capable nodes.
 spec:
@@ -61,7 +59,6 @@ spec:
             nodeSelector:
               kubernetes.io/gpu-node: "true"
 ---
-# GPU Management - Tolerations and Affinity Rules
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -71,7 +68,7 @@ metadata:
     policies.kyverno.io/category: GPU Management
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/description: >-
       Validate and inject appropriate tolerations and affinity rules for pods requiring GPUs, ensuring they can be scheduled on nodes with the necessary GPU resources.
 spec:
@@ -100,7 +97,6 @@ spec:
                           values:
                             - "true"
 ---
-# GPU Management - Resource Quotas
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -110,7 +106,7 @@ metadata:
     policies.kyverno.io/category: GPU Management
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ResourceQuota
-    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/description: >-
       Enforce ResourceQuota resources that limit the total number of GPUs requested within a namespace used for Ray workloads.
 spec:
@@ -129,7 +125,6 @@ spec:
             hard:
               nvidia.com/gpu: "<=10"
 ---
-# GPU Management - Usage Monitoring
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -139,7 +134,7 @@ metadata:
     policies.kyverno.io/category: GPU Management
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/description: >-
       Ensure the deployment of necessary monitoring components or sidecars that collect and expose GPU usage metrics for Ray workloads.
 spec:

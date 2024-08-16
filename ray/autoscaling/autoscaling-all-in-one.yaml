@@ -1,4 +1,4 @@
-### Policy 1: Resource Requests and Limits
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -35,8 +35,7 @@ spec:
                 limits:
                   cpu: "?*"
                   memory: "?*"
-
-### Policy 2: Horizontal Pod Autoscaler (HPA)
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -73,8 +72,7 @@ spec:
                   type: Utilization
             minReplicas: "?*"
             maxReplicas: "?*"
-
-### Policy 3: Cluster Autoscaler Integration
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -104,8 +102,7 @@ spec:
           metadata:
             labels:
               cluster-autoscaler.kubernetes.io/enabled: "true"
-
-### Policy 4: Node Labeling
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -135,8 +132,7 @@ spec:
           metadata:
             labels:
               ray.io/type: "?*"
-
-### Policy 5: Metrics Collection
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -167,8 +163,7 @@ spec:
             containers:
             - name: metrics-server
               image: "?*"
-
-### Policy 6: Pod Disruption Budgets (PDBs)
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -198,8 +193,7 @@ spec:
           spec:
             minAvailable: "?*"
             maxUnavailable: "?*"
-
-### Policy 7: Scaling Behavior Tuning
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -232,8 +226,7 @@ spec:
                 stabilizationWindowSeconds: "?*"
               scaleDown:
                 stabilizationWindowSeconds: "?*"
-
-### Policy 8: Scale-Down Control
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -267,8 +260,7 @@ spec:
                 preStop:
                   exec:
                     command: ["?*"]
-
-### Policy 9: Scaling Policies
+---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
